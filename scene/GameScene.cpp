@@ -1,19 +1,45 @@
 #include "GameScene.h"
 #include "TextureManager.h"
 #include <cassert>
+#include "AxisIndicator.h"
 
 GameScene::GameScene() {}
 
-GameScene::~GameScene() {}
+GameScene::~GameScene() { delete debugCamera_, delete sprite_, model_, delete player_; }
 
 void GameScene::Initialize() {
 
 	dxCommon_ = DirectXCommon::GetInstance();
 	input_ = Input::GetInstance();
 	audio_ = Audio::GetInstance();
+	//ファイル名を指定してテクスチャを読み込む
+	textureHandle_ = TextureManager::Load("white1x1.png");
+	sprite_ = Sprite::Create(textureHandle_, {100, 50});
+	//3Dモデルの生成
+	model_ = Model::Create();
+	//ワールドトランスフォームの初期化
+	worldTransform_.Initialize();
+	//ビューポートプロジェクションの初期化
+	viewProjection_.Initialize();
+	// デバッグカメラの生成
+	debugCamera_ = new DebugCamera(1280, 720);
+	//軸方向表示の表示を有効にする
+	AxisIndicator::GetInstance()->SetVisible(true);
+	//軸方向表示が参考するビュープロジェクションを指定する(アドレス渡し)
+	AxisIndicator::GetInstance()->SetTargetViewProjection(&debugCamera_->GetViewProjection());
+	//自キャラの生成
+	player_ = new Player;
+	//自キャラの初期化
+	player_->Initialize(model_, textureHandle_);
 }
 
-void GameScene::Update() {}
+void GameScene::Update() {
+
+	// デバックカメラの更新
+	debugCamera_->Update();
+	//自キャラの更新
+	player_->Update();
+}
 
 void GameScene::Draw() {
 
@@ -28,6 +54,8 @@ void GameScene::Draw() {
 	/// ここに背景スプライトの描画処理を追加できる
 	/// </summary>
 
+	sprite_->Draw();
+
 	// スプライト描画後処理
 	Sprite::PostDraw();
 	// 深度バッファクリア
@@ -41,6 +69,12 @@ void GameScene::Draw() {
 	/// <summary>
 	/// ここに3Dオブジェクトの描画処理を追加できる
 	/// </summary>
+
+	//3D描画
+	//model_->Draw(worldTransform_,viewProjection_,textureHandle_);
+	//デバッグカメラの描画
+	//model_->Draw(worldTransform_, debugCamera_->GetViewProjection(), textureHandle_);
+	player_->Draw(viewProjection_);
 
 	// 3Dオブジェクト描画後処理
 	Model::PostDraw();
