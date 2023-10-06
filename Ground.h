@@ -1,18 +1,17 @@
 ﻿#pragma once
 #include "Model.h"
-#include  "WorldTransform.h"
-#include <cassert>
-class Player {
+#include "WorldTransform.h"
+class Ground {
 public: // メンバ関数
 	/// <summary>
 	/// コンストクラタ
 	/// </summary>
-	Player();
+	Ground();
 
 	/// <summary>
 	/// デストラクタ
 	/// </summary>
-	~Player();
+	~Ground();
 
 	/// <summary>
 	/// 初期化
@@ -30,10 +29,10 @@ public: // メンバ関数
 	void Draw(const ViewProjection& viewProjection);
 
 	private:
-		//ワールド変換データ
-	    WorldTransform worldTransform_;
-		//モデル
-	    Model* model_ = nullptr;
-		//テクスチャハンドル
-	    //uint32_t textureHandle_ = 0u;
+	// ワールド変換データ
+	WorldTransform worldTransform_;
+	// モデル
+	Model* model_ = nullptr;
+	
+
 };

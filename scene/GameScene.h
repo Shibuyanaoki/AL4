@@ -10,6 +10,8 @@
 #include "WorldTransform.h"
 #include "DebugCamera.h"
 #include "Player.h"
+#include "Skydome.h"
+#include "Ground.h"
 #include <memory>
 
 /// <summary>
@@ -43,6 +45,9 @@ public: // メンバ関数
 	/// </summary>
 	void Draw();
 
+	//デバッグカメラ有効
+	bool isDebugCameraActive_ = false;
+
 private: // メンバ変数
 	DirectXCommon* dxCommon_ = nullptr;
 	Input* input_ = nullptr;
@@ -56,8 +61,12 @@ private: // メンバ変数
 	uint32_t textureHandle_ = 0;
 	//スプライト
 	//Sprite* sprite_ = nullptr;
-	//3Dモデル
-	std::unique_ptr<Model> model_;
+	//自キャラの3Dモデル
+	std::unique_ptr<Model> modelPlayer_;
+	//天球の3Dモデル
+	std::unique_ptr<Model> modelSkydome_;
+	//地面の3Dモデル
+	std::unique_ptr<Model> modelGround_;
 	//ワールドトランスフォーム
 	WorldTransform worldTransform_;
 	//ビュープロダクション
@@ -66,4 +75,8 @@ private: // メンバ変数
 	std::unique_ptr<Player> player_;
 	//デバッグカメラ
 	DebugCamera* debugCamera_ = nullptr;
+	//天球
+	std::unique_ptr<Skydome> skydome_;
+	//地面
+	std::unique_ptr<Ground> ground_;
 };
