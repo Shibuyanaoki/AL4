@@ -5,7 +5,7 @@
 
 GameScene::GameScene() {}
 
-GameScene::~GameScene() { delete debugCamera_, delete sprite_, model_, delete player_; }
+GameScene::~GameScene() {  }
 
 void GameScene::Initialize() {
 
@@ -14,9 +14,10 @@ void GameScene::Initialize() {
 	audio_ = Audio::GetInstance();
 	//ファイル名を指定してテクスチャを読み込む
 	textureHandle_ = TextureManager::Load("white1x1.png");
-	sprite_ = Sprite::Create(textureHandle_, {100, 50});
+	//スプライトの生成
+	//sprite_ = Sprite::Create(textureHandle_, {100, 50});
 	//3Dモデルの生成
-	model_ = Model::Create();
+	model_.reset(Model::Create());
 	//ワールドトランスフォームの初期化
 	worldTransform_.Initialize();
 	//ビューポートプロジェクションの初期化
@@ -28,9 +29,9 @@ void GameScene::Initialize() {
 	//軸方向表示が参考するビュープロジェクションを指定する(アドレス渡し)
 	AxisIndicator::GetInstance()->SetTargetViewProjection(&debugCamera_->GetViewProjection());
 	//自キャラの生成
-	player_ = new Player;
+	player_ = std::make_unique<Player>();
 	//自キャラの初期化
-	player_->Initialize(model_, textureHandle_);
+	player_->Initialize(model_.get(), textureHandle_);
 }
 
 void GameScene::Update() {
@@ -54,7 +55,7 @@ void GameScene::Draw() {
 	/// ここに背景スプライトの描画処理を追加できる
 	/// </summary>
 
-	sprite_->Draw();
+	//sprite_->Draw();
 
 	// スプライト描画後処理
 	Sprite::PostDraw();

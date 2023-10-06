@@ -10,6 +10,7 @@
 #include "WorldTransform.h"
 #include "DebugCamera.h"
 #include "Player.h"
+#include <memory>
 
 /// <summary>
 /// ゲームシーン
@@ -54,17 +55,15 @@ private: // メンバ変数
 	//テクスチャハンドル
 	uint32_t textureHandle_ = 0;
 	//スプライト
-	Sprite* sprite_ = nullptr;
+	//Sprite* sprite_ = nullptr;
 	//3Dモデル
-	Model* model_ = nullptr;
+	std::unique_ptr<Model> model_;
 	//ワールドトランスフォーム
 	WorldTransform worldTransform_;
 	//ビュープロダクション
 	ViewProjection viewProjection_;
 	//自キャラ
-	Player* player_ = nullptr;
-
-
+	std::unique_ptr<Player> player_;
 	//デバッグカメラ
 	DebugCamera* debugCamera_ = nullptr;
 };
