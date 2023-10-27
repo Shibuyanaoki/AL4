@@ -97,14 +97,14 @@ float Dot(Vector3 v1, Vector3 v2);
 /// </summary>
 /// <param name="v"></param>
 /// <returns></returns>
-float Length(Vector3& v);
+float Length(const Vector3& v);
 
 /// <summary>
 /// ベクトルの正規化
 /// </summary>
 /// <param name="v"></param>
 /// <returns></returns>
-Vector3 Normalize(Vector3& v);
+Vector3 Normalize(const Vector3& v);
 
 /// <summary>
 ///

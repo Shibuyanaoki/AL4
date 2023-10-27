@@ -211,18 +211,20 @@ float Dot(Vector3 v1, Vector3 v2) {
 	return result;
 }
 
-float Length(Vector3& v) {
+float Length(const Vector3& v) {
 	float result;
 	// result = sqrtf(v1.x * v2.x + v1.y * v2.y + v1.z * v2.z);
 	return result = sqrtf(Dot(v, v));
 }
 
-Vector3 Normalize(Vector3& v) {
-	Vector3 result;
-	float length = Length(v);
-	result.x = v.x / length;
-	result.y = v.y / length;
-	result.z = v.z / length;
+Vector3 Normalize(const Vector3& v) {
+	float len = Length(v);
+	Vector3 result = v;
+	if (len != 0) {
+		result.x /= len;
+		result.y /= len;
+		result.z /= len;
+	}
 	return result;
 }
 
