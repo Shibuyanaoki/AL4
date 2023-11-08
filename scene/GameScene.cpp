@@ -38,9 +38,7 @@ void GameScene::Initialize() {
 	// 自キャラの生成と初期化処理
 	player_ = std::make_unique<Player>();
 	player_->Initialize(modelPlayer_.get());
-	//自キャラのビュープロジェクションに追従カメラのビュープロジェクションをセット
-	player_->SetViewProjection(&followCamera_->GetViewProjection());
-
+	
 	// 天球の生成と初期化処理
 	skydome_ = std::make_unique<Skydome>();
 	skydome_->Initialize(modelSkydome_.get());
@@ -55,7 +53,8 @@ void GameScene::Initialize() {
 	// 自キャラのワールドトランスフォームを追従カメラのセット
 	followCamera_->SetTarget(&player_->GetWorldTransform());
 
-
+	// 自キャラのビュープロジェクションに追従カメラのビュープロジェクションをセット
+	player_->SetViewProjection(&followCamera_->GetViewProjection());
 	
 
 }
