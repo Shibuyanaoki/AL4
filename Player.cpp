@@ -24,8 +24,6 @@ void Player::Update() {
 
 		// 速さ
 		const float speed = 0.3f;
-		Matrix4x4 rotation;
-		//Matrix4x4 rotationMatrix;
 
 		// 移動量
 		Vector3 move = {
@@ -34,26 +32,26 @@ void Player::Update() {
 		    (float)joyState.Gamepad.sThumbLY / SHRT_MAX * speed, // Lスティックの縦成分
 		};
 
+		Matrix4x4 rotationXMatrix = MakeRotateXmatrix(viewProjection_->rotation_.x);
+		Matrix4x4 rotationYMatrix = MakeRotateYmatrix(viewProjection_->rotation_.y);
+		Matrix4x4 rotationZMatrix = MakeRotateZmatrix(viewProjection_->rotation_.z);
+		Matrix4x4 rotationXYZMatrix =
+		    Multiply(rotationXMatrix, Multiply(rotationYMatrix, rotationZMatrix));
+
 		// 移動量に速さを反映
 		move = Multiply(speed, Normalize(move));
 
 		// 移動量に速さを反映(θ度の移動ベクトル)
-		rotation = MakeRotateYmatrix(viewProjection_->rotation_.y);
+		//rotation = (viewProjection_->rotation_.y);
 
-		move = Transform(move, rotation);
+		move = Transform(move, rotationXYZMatrix);
 
-		if (move.y != 0) {
+		if (move.y != 0 || move.z != 0) {
 			worldTransform_.rotation_.y = std::atan2(move.z, move.x);
 		}
-		
+
 		// 移動
 		worldTransform_.translation_ = Add(worldTransform_.translation_, move);
-
-		/*rotationMatrix = MakeRotateYmatrix(-worldTransform_.rotation_.y);
-
-		move = Transform(move, rotationMatrix);
-
-		worldTransform_.rotation_.x = std::atan2(move.z, move.y);*/
 
 	}
 
