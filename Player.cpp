@@ -1,4 +1,5 @@
 ﻿#include "Player.h"
+#include "ImGuiManager.h"
 
 Player::Player() {}
 
@@ -17,12 +18,20 @@ void Player::Initialize(Model* modelBody, Model* modelHead, Model* modelL_arm, M
 	modelFighterHead_ = modelHead;
 	modelFighterL_arm_ = modelL_arm;
 	modelFighterR_arm_ = modelR_arm;
-	
+
+	for (int i = 0; i < 5; i++) {
+		worldTransform_[i].parent_ = &worldTransform_[]
+	}
 	// ワールド変換の初期化
 	worldTransform_.Initialize();
+
+	// 浮遊ギッミク
+	InitializeFloatingGimmick();
 }
 
 void Player::Update() {
+
+	UpdateFlotingGimmick();
 
 	// ゲームパッドの状態を得る変数
 	XINPUT_STATE joyState;
@@ -55,7 +64,7 @@ void Player::Update() {
 		move = Transform(move, rotationXYZMatrix);
 
 		if (move.y != 0 || move.z != 0) {
-			worldTransform_.rotation_.y = std::atan2(move.z, move.x);
+			worldTransform_.rotation_.y = std::atan2(move.x, move.z);
 		}
 
 		// 移動
@@ -92,24 +101,36 @@ const WorldTransform& Player::GetWorldTransform() {
 	return worldTransform_;
 }
 
-void Player::InitializeFloatingGimmick() {
-
-	floatingParameter_ = 0.0f;
-
-}
+void Player::InitializeFloatingGimmick() { floatingParameter_ = 0.0f; }
 
 void Player::UpdateFlotingGimmick() {
 
-	//浮遊移動のサイクル<frame>
+	// 浮遊移動のサイクル<frame>
 	const uint16_t period = 30;
 
-	//1フレームでのパラメータ加算値
-	const float step = 2.0f * 3.14 / period;
+	// 1フレームでのパラメータ加算値
+	const float step = 2.0f * 3.14f / period;
 
-	//パラメータを1ステップ分加算
+	// パラメータを1ステップ分加算
 	floatingParameter_ += step;
-	//2πを超えたらθに戻す
-	floatingParameter_ = std::fmod
+	// 2πを超えたらθに戻す
+	floatingParameter_ = std::fmod(floatingParameter_, 2.0f * 3.14f);
 
+	// 浮遊の振幅<m>
+	const float floatingAmplitube = 0.5f;
+	// 浮遊を座標に反映
+	worldTransform_.translation_.y = std::sin(floatingParameter_) * floatingAmplitube;
+	float w[3]{
+	    worldTransform_.translation_.x,
+	    worldTransform_.translation_.y,
+	    worldTransform_.translation_.z,
+	};
+	worldTransform_.translation_.x = w[0];
+	worldTransform_.translation_.y = w[1];
+	worldTransform_.translation_.z = w[2];
 
+	ImGui::Begin("Player");
+	ImGui::DragFloat4("Head Translation", w);
+	ImGui::Text("TinTin Manko");
+	ImGui::End();
 }

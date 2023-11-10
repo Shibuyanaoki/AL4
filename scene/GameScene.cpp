@@ -28,16 +28,24 @@ void GameScene::Initialize() {
 	// 軸方向表示が参考するビュープロジェクションを指定する(アドレス渡し)
 	AxisIndicator::GetInstance()->SetTargetViewProjection(&debugCamera_->GetViewProjection());
 
-	// 3Dモデルの生成
-	modelPlayer_.reset(Model::CreateFromOBJ("player", true));
+	// 自機の体の3Dモデルの生成
+	modelFighterBody_.reset(Model::CreateFromOBJ("float_Body", true));
+	// 自機の頭の3Dモデルの生成
+	modelFighterHead_.reset(Model::CreateFromOBJ("float_Head", true));
+	// 自機の左腕の3Dモデルの生成
+	modelFighterL_arm_.reset(Model::CreateFromOBJ("float_L_arm", true));
+	// 自機の右腕の3Dモデルの生成
+	modelFighterR_arm_.reset(Model::CreateFromOBJ("float_R_arm", true));
 	// 天球の3Dモデル生成
 	modelSkydome_.reset(Model::CreateFromOBJ("skydome", true));
 	// 地面の3Dモデル生成
 	modelGround_.reset(Model::CreateFromOBJ("ground", true));
 
+
+
 	// 自キャラの生成と初期化処理
 	player_ = std::make_unique<Player>();
-	player_->Initialize(modelPlayer_.get());
+	player_->Initialize(modelFighterBody_.get(),modelFighterHead_.get(),modelFighterL_arm_.get(),modelFighterR_arm_.get());
 	
 	// 天球の生成と初期化処理
 	skydome_ = std::make_unique<Skydome>();
