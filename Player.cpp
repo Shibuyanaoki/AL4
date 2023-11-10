@@ -4,12 +4,20 @@ Player::Player() {}
 
 Player::~Player() {}
 
-void Player::Initialize(Model* model) {
-	assert(model);
+void Player::Initialize(Model* modelBody, Model* modelHead, Model* modelL_arm, Model* modelR_arm) {
+	assert(modelBody);
+	assert(modelHead);
+	assert(modelL_arm);
+	assert(modelR_arm);
+
 	input_ = Input::GetInstance();
 
 	// 引数として受け取ったデータをメンバ変数に記録する
-	model_ = model;
+	modelFighterBody_ = modelBody;
+	modelFighterHead_ = modelHead;
+	modelFighterL_arm_ = modelL_arm;
+	modelFighterR_arm_ = modelR_arm;
+	
 	// ワールド変換の初期化
 	worldTransform_.Initialize();
 }
@@ -42,7 +50,7 @@ void Player::Update() {
 		move = Multiply(speed, Normalize(move));
 
 		// 移動量に速さを反映(θ度の移動ベクトル)
-		//rotation = (viewProjection_->rotation_.y);
+		// rotation = (viewProjection_->rotation_.y);
 
 		move = Transform(move, rotationXYZMatrix);
 
@@ -52,7 +60,6 @@ void Player::Update() {
 
 		// 移動
 		worldTransform_.translation_ = Add(worldTransform_.translation_, move);
-
 	}
 
 	// 行列を定数バッファに転送
@@ -62,7 +69,10 @@ void Player::Update() {
 void Player::Draw(const ViewProjection& viewProjection) {
 
 	// 3Dモデルを描画
-	model_->Draw(worldTransform_, viewProjection);
+	modelFighterBody_->Draw(worldTransform_, viewProjection);
+	modelFighterHead_->Draw(worldTransform_, viewProjection);
+	modelFighterL_arm_->Draw(worldTransform_, viewProjection);
+	modelFighterR_arm_->Draw(worldTransform_, viewProjection);
 }
 
 Vector3 Player::GetWorldPosition() {
@@ -80,4 +90,27 @@ Vector3 Player::GetWorldPosition() {
 const WorldTransform& Player::GetWorldTransform() {
 	// TODO: return ステートメントをここに挿入します
 	return worldTransform_;
+}
+
+void Player::InitializeFloatingGimmick() {
+
+	floatingParameter_ = 0.0f;
+
+
+
+
+}
+
+void Player::UpdateFlotingGimmick() {
+
+	//浮遊移動のサイクル<frame>
+	const uint16_t period = 30;
+
+	//1フレームでのパラメータ加算値
+	const float step = 2.0f * 3.14 / period;
+
+	//パラメータを1ステップ分加算
+	floatingParameter_ += step;
+	//2πを超えたらθに戻す
+
 }

@@ -18,7 +18,7 @@ public: // メンバ関数
 	/// <summary>
 	/// 初期化
 	/// </summary>
-	void Initialize(Model* model);
+	void Initialize(Model* modelBody, Model* modelHead, Model* modelL_arm, Model* modelR_arm);
 
 	/// <summary>
 	/// 毎フレーム処理
@@ -41,13 +41,29 @@ public: // メンバ関数
 		viewProjection_ = viewProjection;
 	}
 
+	/// <summary>
+	/// 浮遊ギミック初期化
+	/// </summary>
+	void InitializeFloatingGimmick(); 
+
+	/// <summary>
+	/// 浮遊ギミック更新
+	/// </summary>
+	void UpdateFlotingGimmick();
+
 private:
 	Input* input_ = nullptr;
 
 	// ワールド変換データ
 	WorldTransform worldTransform_;
 	// モデル
-	Model* model_ = nullptr;
+	Model* modelFighterBody_ ;
+	Model* modelFighterHead_;
+	Model* modelFighterL_arm_;
+	Model* modelFighterR_arm_;
+
+	// 浮遊ギミックの媒介変数
+	float floatingParameter_ = 0.0f;
 
 	//カメラのビュープロジェクション
 	const ViewProjection* viewProjection_ = nullptr;
