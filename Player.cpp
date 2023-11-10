@@ -47,7 +47,7 @@ void Player::Update() {
 		move = Transform(move, rotationXYZMatrix);
 
 		if (move.y != 0 || move.z != 0) {
-			worldTransform_.rotation_.y = std::atan2(move.z, move.x);
+			worldTransform_.rotation_.y = std::atan2(move.x, move.z);
 		}
 
 		// 移動
