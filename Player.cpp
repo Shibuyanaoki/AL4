@@ -96,9 +96,6 @@ void Player::InitializeFloatingGimmick() {
 
 	floatingParameter_ = 0.0f;
 
-
-
-
 }
 
 void Player::UpdateFlotingGimmick() {
@@ -112,5 +109,7 @@ void Player::UpdateFlotingGimmick() {
 	//パラメータを1ステップ分加算
 	floatingParameter_ += step;
 	//2πを超えたらθに戻す
+	floatingParameter_ = std::fmod
+
 
 }
