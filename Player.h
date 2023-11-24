@@ -1,9 +1,11 @@
 ﻿#pragma once
+#include "BaseCharacter.h"
 #include "Input.h"
 #include "Model.h"
 #include "WorldTransform.h"
+
 #include <cassert>
-class Player {
+class Player : public BaseCharacter {
 public: // メンバ関数
 	/// <summary>
 	/// コンストクラタ
@@ -18,17 +20,19 @@ public: // メンバ関数
 	/// <summary>
 	/// 初期化
 	/// </summary>
-	void Initialize(Model* modelBody, Model* modelHead, Model* modelL_arm, Model* modelR_arm);
+	void Initialize(const std::vector<Model*>& models) override;
 
 	/// <summary>
 	/// 毎フレーム処理
 	/// </summary>
-	void Update();
+	void Updata() override;
+
+	
 
 	/// <summary>
 	/// 描画
 	/// </summary>
-	void Draw(const ViewProjection& viewProjection);
+	void Draw(const ViewProjection& viewProjection) override;
 
 	/// <summary>
 	///  ワールド座標を取得
@@ -44,7 +48,7 @@ public: // メンバ関数
 	/// <summary>
 	/// 浮遊ギミック初期化
 	/// </summary>
-	void InitializeFloatingGimmick(); 
+	void InitializeFloatingGimmick();
 
 	/// <summary>
 	/// 浮遊ギミック更新
@@ -60,11 +64,13 @@ private:
 
 	// ワールド変換データ
 	WorldTransform worldTransform_;
-	// モデル
-	Model* modelFighterBody_ ;
-	Model* modelFighterHead_;
-	Model* modelFighterL_arm_;
-	Model* modelFighterR_arm_;
+
+	enum PlayerNum {
+		kModeIndexBody,
+		kModeIndexHead,
+		kModeIndexL_arm,
+		kModeIndexR_arm,
+	};
 
 	WorldTransform worldTransformBody_;
 	WorldTransform worldTransformHead_;
@@ -74,7 +80,6 @@ private:
 	// 浮遊ギミックの媒介変数
 	float floatingParameter_ = 0.0f;
 
-	//カメラのビュープロジェクション
+	// カメラのビュープロジェクション
 	const ViewProjection* viewProjection_ = nullptr;
-
 };

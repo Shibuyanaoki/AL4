@@ -5,19 +5,16 @@ Player::Player() {}
 
 Player::~Player() {}
 
-void Player::Initialize(Model* modelBody, Model* modelHead, Model* modelL_arm, Model* modelR_arm) {
-	assert(modelBody);
+void Player::Initialize(const std::vector<Model*>& models) {
+	/*assert(modelBody);
 	assert(modelHead);
 	assert(modelL_arm);
-	assert(modelR_arm);
+	assert(modelR_arm);*/
 
 	input_ = Input::GetInstance();
 
-	// 引数として受け取ったデータをメンバ変数に記録する
-	modelFighterBody_ = modelBody;
-	modelFighterHead_ = modelHead;
-	modelFighterL_arm_ = modelL_arm;
-	modelFighterR_arm_ = modelR_arm;
+	// 基底クラスの初期化
+	BaseCharacter::Initialize(models);
 
 	/*for (int i = 0; i < 5; i++) {
 	    worldTransform_[i].parent_ = &worldTransform_[]
@@ -42,7 +39,7 @@ void Player::Initialize(Model* modelBody, Model* modelHead, Model* modelL_arm, M
 	InitializeFloatingGimmick();
 }
 
-void Player::Update() {
+void Player::Updata() {
 
 	worldTransformBody_.parent_ = &worldTransform_;
 	worldTransformHead_.parent_ = &worldTransformBody_;
@@ -51,6 +48,8 @@ void Player::Update() {
 
 	UpdateFlotingGimmick();
 	UpdataArmAnimation();
+
+
 
 	// ゲームパッドの状態を得る変数
 	XINPUT_STATE joyState;
@@ -104,10 +103,12 @@ void Player::Update() {
 void Player::Draw(const ViewProjection& viewProjection) {
 
 	// 3Dモデルを描画
-	modelFighterBody_->Draw(worldTransformBody_, viewProjection);
-	modelFighterHead_->Draw(worldTransformHead_, viewProjection);
-	modelFighterL_arm_->Draw(worldTransformL_arm_, viewProjection);
-	modelFighterR_arm_->Draw(worldTransformR_arm_, viewProjection);
+	models_[kModeIndexBody]->Draw(worldTransformBody_, viewProjection);
+	models_[kModeIndexHead]->Draw(worldTransformHead_, viewProjection);
+	models_[kModeIndexL_arm]->Draw(worldTransformL_arm_, viewProjection);
+	models_[kModeIndexR_arm]->Draw(worldTransformR_arm_, viewProjection);
+
+
 }
 
 Vector3 Player::GetWorldPosition() {

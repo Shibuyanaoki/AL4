@@ -13,10 +13,6 @@ void GameScene::Initialize() {
 	input_ = Input::GetInstance();
 	audio_ = Audio::GetInstance();
 
-	// ファイル名を指定してテクスチャを読み込む
-	textureHandle_ = TextureManager::Load("white1x1.png");
-	// スプライトの生成
-	// sprite_ = Sprite::Create(textureHandle_, {100, 50});
 	// ワールドトランスフォームの初期化
 	worldTransform_.Initialize();
 	// ビューポートプロジェクションの初期化
@@ -36,16 +32,23 @@ void GameScene::Initialize() {
 	modelFighterL_arm_.reset(Model::CreateFromOBJ("float_L_arm", true));
 	// 自機の右腕の3Dモデルの生成
 	modelFighterR_arm_.reset(Model::CreateFromOBJ("float_R_arm", true));
+	//敵の体の3Dモデルの生成
+
 	// 天球の3Dモデル生成
 	modelSkydome_.reset(Model::CreateFromOBJ("skydome", true));
 	// 地面の3Dモデル生成
 	modelGround_.reset(Model::CreateFromOBJ("ground", true));
 
 
-
 	// 自キャラの生成と初期化処理
 	player_ = std::make_unique<Player>();
-	player_->Initialize(modelFighterBody_.get(),modelFighterHead_.get(),modelFighterL_arm_.get(),modelFighterR_arm_.get());
+
+	//自キャラモデル
+	std::vector<Model*> playerModels = {
+	    modelFighterBody_.get(), modelFighterHead_.get(), modelFighterL_arm_.get(),
+	    modelFighterR_arm_.get()};
+
+	player_->Initialize(playerModels);
 	
 	// 天球の生成と初期化処理
 	skydome_ = std::make_unique<Skydome>();
@@ -93,7 +96,7 @@ void GameScene::Update() {
 	}
 
 	// 自キャラの更新
-	player_->Update();
+	player_->Updata();
 
 	// 天球の更新
 	skydome_->Update();
