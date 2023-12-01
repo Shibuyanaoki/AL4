@@ -7,9 +7,10 @@ void BaseCharacter::Initialize(const std::vector<Model*>& models) {
 	worldTransform_.Initialize();
 
 	worldTransform_.UpdateMatrix();
+
 }
 
-void BaseCharacter::Updata() {}
+void BaseCharacter::Updata() { worldTransform_.UpdateMatrix(); }
 
 void BaseCharacter::Draw(const ViewProjection& viewProjection) {
 	for (Model* model : models_) {

@@ -32,21 +32,27 @@ void GameScene::Initialize() {
 	modelFighterL_arm_.reset(Model::CreateFromOBJ("float_L_arm", true));
 	// 自機の右腕の3Dモデルの生成
 	modelFighterR_arm_.reset(Model::CreateFromOBJ("float_R_arm", true));
+
 	//敵の体の3Dモデルの生成
+	modelEnemyBody_.reset(Model::CreateFromOBJ("needle_Body", true));
+	// 敵の左の3Dモデルの生成
+	modelEnemyL_arm.reset(Model::CreateFromOBJ("needle_L_arm", true));
+	// 敵の左右の3Dモデルの生成
+	modelEnemyR_arm.reset(Model::CreateFromOBJ("needle_R_arm", true));
+
 
 	// 天球の3Dモデル生成
 	modelSkydome_.reset(Model::CreateFromOBJ("skydome", true));
 	// 地面の3Dモデル生成
 	modelGround_.reset(Model::CreateFromOBJ("ground", true));
 
-
-	// 自キャラの生成と初期化処理
-	player_ = std::make_unique<Player>();
-
-	//自キャラモデル
+	//自キャラモデルまとめ
 	std::vector<Model*> playerModels = {
 	    modelFighterBody_.get(), modelFighterHead_.get(), modelFighterL_arm_.get(),
 	    modelFighterR_arm_.get()};
+
+	// 自キャラの生成と初期化処理
+	player_ = std::make_unique<Player>();
 
 	player_->Initialize(playerModels);
 	
@@ -67,6 +73,13 @@ void GameScene::Initialize() {
 	// 自キャラのビュープロジェクションに追従カメラのビュープロジェクションをセット
 	player_->SetViewProjection(&followCamera_->GetViewProjection());
 	
+	//　敵のモデルまとめ
+	std::vector<Model*> enemyModels = {
+	    modelEnemyBody_.get(), modelEnemyL_arm.get(), modelEnemyR_arm.get()};
+
+	//敵の生成と初期化処理
+	enemy_ = std::make_unique<Enemy>();
+	enemy_->Initialize(enemyModels);
 
 }
 
@@ -97,6 +110,9 @@ void GameScene::Update() {
 
 	// 自キャラの更新
 	player_->Updata();
+
+	//敵の更新
+	enemy_->Updata();
 
 	// 天球の更新
 	skydome_->Update();
@@ -151,8 +167,13 @@ void GameScene::Draw() {
 
 	// プレイヤーの描画
 	player_->Draw(viewProjection_);
+
+	//敵の描画
+	enemy_->Draw(viewProjection_);
+
 	// 天球の描画
 	skydome_->Draw(viewProjection_);
+
 	// 地面の描画
 	ground_->Draw(viewProjection_);
 

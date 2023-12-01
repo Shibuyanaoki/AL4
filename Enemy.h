@@ -1,22 +1,33 @@
-#pragma once
+ï»¿#pragma once
 #include "BaseCharacter.h"
 
-class Enemy : public BaseCharacter{
+class Enemy : public BaseCharacter {
 
-/// <summary>
-	/// ‰Šú‰»ˆ—
+public:
+	/// <summary>
+	/// åˆæœŸåŒ–å‡¦ç†
 	/// </summary>
-	virtual void Initialize(const std::vector<Model*>& models);
+	virtual void Initialize(const std::vector<Model*>& models) override;
 
 	/// <summary>
-	/// XVˆ—
+	/// æ›´æ–°å‡¦ç†
 	/// </summary>
-	virtual void Updata();
+	virtual void Updata() override;
 
 	/// <summary>
-	/// •`‰æˆ—
+	/// æç”»å‡¦ç†
 	/// </summary>
 	virtual void Draw(const ViewProjection& viewProjection);
 
+private:
 
+	WorldTransform worldTransformBody_;
+	WorldTransform worldTransformL_arm_;
+	WorldTransform worldTransformR_arm_;
+
+	enum EnemyNum {
+		kModeIndexBody,
+		kModeIndexL_arm,
+		kModeIndexR_arm,
+	};
 };
