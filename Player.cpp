@@ -34,7 +34,7 @@ void Player::Initialize(const std::vector<Model*>& models) {
 	worldTransformR_arm_.translation_ = {0.5f, 1.0f, 0.0f};
 
 	worldTransformL_arm_.rotation_ = {-0.2f, 0.0f, 0.0f};
-	worldTransformR_arm_.rotation_ = {-0.2f, 0.0f, 0.0f};
+	
 
 	// 浮遊ギッミク
 	InitializeFloatingGimmick();
@@ -195,7 +195,7 @@ void Player::UpdateFlotingGimmick() {
 void Player::UpdataArmAnimation() {
 
 	// 浮遊移動のサイクル<frame>
-	const uint16_t period = 360;
+	const uint16_t period = 120;
 
 	// 1フレームでのパラメータ加算値
 	const float step = 2.0f * 3.14f / period;
@@ -206,7 +206,7 @@ void Player::UpdataArmAnimation() {
 	floatingParameter_ = std::fmod(floatingParameter_, 2.0f * 3.14f);
 
 	// 浮遊の振幅<m>
-	const float floatingAmplitube = 0.1f;
+	const float floatingAmplitube = 0.02f;
 	// 浮遊を座標に反映(左)
 	worldTransformL_arm_.rotation_.x += std::sin(floatingParameter_) * floatingAmplitube;
 	// 浮遊を座標に反映(右)

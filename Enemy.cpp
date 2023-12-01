@@ -15,11 +15,21 @@ void Enemy::Initialize(const std::vector<Model*>& models) {
 	// worldTransform_.UpdateMatrix();
 }
 
+
+
 void Enemy::Updata() {
+
+	worldTransformBody_.parent_ = &worldTransform_;
+	worldTransformL_arm_.parent_ = worldTransformBody_.parent_;
+	worldTransformR_arm_.parent_ = worldTransformBody_.parent_;
+
+
 	// 体の部位を行列を定数バッファに転送
 	worldTransformBody_.UpdateMatrix();
 	worldTransformL_arm_.UpdateMatrix();
 	worldTransformR_arm_.UpdateMatrix();
+
+	
 
 	ImGui::Begin("Enemy");
 	float Body[3] = {
