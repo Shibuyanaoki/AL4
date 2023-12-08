@@ -5,6 +5,8 @@ void Enemy::Initialize(const std::vector<Model*>& models) {
 	// 基底クラスの初期化
 	BaseCharacter::Initialize(models);
 
+
+	worldTransform_.Initialize();
 	worldTransformBody_.Initialize();
 	worldTransformL_arm_.Initialize();
 	worldTransformR_arm_.Initialize();
@@ -15,21 +17,33 @@ void Enemy::Initialize(const std::vector<Model*>& models) {
 	// worldTransform_.UpdateMatrix();
 }
 
-
-
 void Enemy::Updata() {
 
 	worldTransformBody_.parent_ = &worldTransform_;
-	worldTransformL_arm_.parent_ = worldTransformBody_.parent_;
-	worldTransformR_arm_.parent_ = worldTransformBody_.parent_;
+	worldTransformL_arm_.parent_ = &worldTransformBody_;
+	worldTransformR_arm_.parent_ = &worldTransformBody_;
 
+	Vector3 move = {0, 0, 0.5f};
+
+    /* float speed = 0.5f;
+
+	 move.z += speed;*/
+
+	worldTransform_.rotation_.y += 0.5f;
+
+	//move = Multiply(speed, Normalize(move));
+
+	move = Transform(move, MakeRotateYmatrix(viewProjection_->rotation_.y));
+
+	worldTransform_.rotation_.y = std::atan2(move.x, move.z);
+	
+	worldTransform_.translation_ = Add(worldTransform_.translation_, move);
 
 	// 体の部位を行列を定数バッファに転送
+	worldTransform_.UpdateMatrix();
 	worldTransformBody_.UpdateMatrix();
 	worldTransformL_arm_.UpdateMatrix();
 	worldTransformR_arm_.UpdateMatrix();
-
-	
 
 	ImGui::Begin("Enemy");
 	float Body[3] = {
@@ -68,4 +82,9 @@ void Enemy::Draw(const ViewProjection& viewProjection) {
 	models_[kModeIndexBody]->Draw(worldTransformBody_, viewProjection);
 	models_[kModeIndexL_arm]->Draw(worldTransformL_arm_, viewProjection);
 	models_[kModeIndexR_arm]->Draw(worldTransformR_arm_, viewProjection);
+}
+
+const WorldTransform& Enemy::GetWorldTransform() {
+	// TODO: return ステートメントをここに挿入します
+	return worldTransform_;
 }

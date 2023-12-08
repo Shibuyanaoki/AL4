@@ -53,8 +53,6 @@ void Player::Updata() {
 
 	UpdataArmAnimation();
 
-
-
 	// ゲームパッドの状態を得る変数
 	XINPUT_STATE joyState;
 

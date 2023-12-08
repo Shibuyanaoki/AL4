@@ -27,8 +27,6 @@ public: // メンバ関数
 	/// </summary>
 	void Updata() override;
 
-	
-
 	/// <summary>
 	/// 描画
 	/// </summary>

@@ -38,6 +38,12 @@ public: // メンバ関数
 	const ViewProjection& GetViewProjection() { return viewProjection_; }
 
 	/// <summary>
+	/// ビュープロジェクションを取得
+	/// </summary>
+	/// <returns>ビュープロジェクション</returns>
+	const ViewProjection& GetViewProjectionEnemy() { return viewProjectionEnemy_; }
+
+	/// <summary>
 	/// プロジェクション行列計算用のメンバ設定関数群
 	/// </summary>
 	void SetFovAngleY(float value) { viewProjection_.fovAngleY = value; }
@@ -50,6 +56,7 @@ private:
 
 	//ビューポートプロジェクション
 	ViewProjection viewProjection_;
+	ViewProjection viewProjectionEnemy_;
 	//追従対象
 	const WorldTransform* target_ = nullptr;
 };

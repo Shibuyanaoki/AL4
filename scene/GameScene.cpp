@@ -69,6 +69,8 @@ void GameScene::Initialize() {
 	followCamera_->Initialize();
 	// 自キャラのワールドトランスフォームを追従カメラのセット
 	followCamera_->SetTarget(&player_->GetWorldTransform());
+	//followCamera_->SetTarget(&enemy_->GetWorldTransform());
+
 
 	// 自キャラのビュープロジェクションに追従カメラのビュープロジェクションをセット
 	player_->SetViewProjection(&followCamera_->GetViewProjection());
@@ -80,6 +82,8 @@ void GameScene::Initialize() {
 	//敵の生成と初期化処理
 	enemy_ = std::make_unique<Enemy>();
 	enemy_->Initialize(enemyModels);
+
+	enemy_->SetViewProjection(&followCamera_->GetViewProjectionEnemy());
 
 }
 

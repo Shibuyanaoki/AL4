@@ -22,7 +22,8 @@ void FollowCamera::Update() {
 
 		viewProjection_.rotation_.y += (float)joyState.Gamepad.sThumbRX / SHRT_MAX * rotation;
 	}
-
+	//敵の自動視点移動
+	viewProjectionEnemy_.rotation_.y += 0.05f;
 	// 追従対象がいれば
 	if (target_) {
 		// 追従対象からカメラまでのオフセット
