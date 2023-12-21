@@ -80,6 +80,9 @@ private: // メンバ変数
 	std::unique_ptr<Model> modelEnemyL_arm;
 	std::unique_ptr<Model> modelEnemyR_arm;
 
+	// ハンマーの3Dモデル
+	std::unique_ptr<Model> modelHammer_;
+
 	//ワールドトランスフォーム
 	WorldTransform worldTransform_;
 	//ビュープロダクション

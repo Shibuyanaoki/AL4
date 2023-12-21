@@ -5,6 +5,13 @@
 #include "WorldTransform.h"
 
 #include <cassert>
+#include <optional>
+
+enum class Behavior {
+	kRoot, //通常状態
+	kAttack, //攻撃中
+};
+
 class Player : public BaseCharacter {
 public: // メンバ関数
 	/// <summary>
@@ -57,6 +64,28 @@ public: // メンバ関数
 
 	void SetParent(const WorldTransform* parent) { worldTransform_.parent_ = parent; }
 
+	/// <summary>
+	/// 通常行動初期化
+	/// </summary>
+	void BehaviorRootInitialize();
+
+	/// <summary>
+	/// 攻撃行動初期化
+	/// </summary>
+	void BehaviorAttackInitialize();
+
+	/// <summary>
+	/// 通常行動更新
+	/// </summary>
+	void BehaviorRootUpdate();
+
+	/// <summary>
+	/// 攻撃行動更新
+	/// </summary>
+	void BehaviorAttackUpdate();
+
+	Behavior behavior_ = Behavior::kRoot;
+
 private:
 	Input* input_ = nullptr;
 
@@ -64,20 +93,34 @@ private:
 	WorldTransform worldTransform_;
 
 	enum PlayerNum {
-		kModeIndexBody,
-		kModeIndexHead,
-		kModeIndexL_arm,
-		kModeIndexR_arm,
+		kModelIndexBody,
+		kModelIndexHead,
+		kModelIndexL_arm,
+		kModelIndexR_arm,
+		kModelHammer
 	};
 
 	WorldTransform worldTransformBody_;
 	WorldTransform worldTransformHead_;
 	WorldTransform worldTransformL_arm_;
 	WorldTransform worldTransformR_arm_;
+	WorldTransform worldTransformHammer_;
+
+	std::optional<Behavior> behaviorRequest_ = std::nullopt;
 
 	// 浮遊ギミックの媒介変数
 	float floatingParameter_ = 0.0f;
 
 	// カメラのビュープロジェクション
 	const ViewProjection* viewProjection_ = nullptr;
+
+	// 攻撃時間
+	float attackTime_ = 0;
+
+	// 攻撃時間Max時間
+	const float attackTimeMax_ = 120;
+
+	// フレーム
+	float frameEnd_ = 120;
+
 };

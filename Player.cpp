@@ -1,5 +1,9 @@
 ﻿#include "Player.h"
 #include "ImGuiManager.h"
+#include "Easings.h"
+
+#define _USE_MATH_DEFINES
+#include <math.h>
 
 Player::Player() {}
 
@@ -27,14 +31,20 @@ void Player::Initialize(const std::vector<Model*>& models) {
 	worldTransformHead_.Initialize();
 	worldTransformL_arm_.Initialize();
 	worldTransformR_arm_.Initialize();
+	worldTransformHammer_.Initialize();
 
-	//自機の頭・両腕の初期位置
+	// 自機の頭・両腕の初期位置
 	worldTransformHead_.translation_ = {0.0f, 1.3f, 0.0f};
 	worldTransformL_arm_.translation_ = {-0.5f, 1.0f, 0.0f};
 	worldTransformR_arm_.translation_ = {0.5f, 1.0f, 0.0f};
 
 	worldTransformL_arm_.rotation_ = {-0.2f, 0.0f, 0.0f};
-	
+
+	worldTransformBody_.parent_ = &worldTransform_;
+	worldTransformHead_.parent_ = &worldTransformBody_;
+	worldTransformL_arm_.parent_ = &worldTransformBody_;
+	worldTransformR_arm_.parent_ = &worldTransformBody_;
+	worldTransformHammer_.parent_ = &worldTransformBody_;
 
 	// 浮遊ギッミク
 	InitializeFloatingGimmick();
@@ -42,12 +52,170 @@ void Player::Initialize(const std::vector<Model*>& models) {
 
 void Player::Updata() {
 
-	//BaseCharacter::Updata();
+	// リクエストがあったら初期化と次の行動に以降
+	if (behaviorRequest_) {
+		// ふるまいを変更する
+		behavior_ = behaviorRequest_.value();
+		// ふるまいごとの初期化を実行
+		switch (behavior_) {
+		case Behavior::kRoot:
+		default:
 
-	worldTransformBody_.parent_ = &worldTransform_;
-	worldTransformHead_.parent_ = &worldTransformBody_;
-	worldTransformL_arm_.parent_ = &worldTransformBody_;
-	worldTransformR_arm_.parent_ = &worldTransformBody_;
+			BehaviorRootInitialize();
+			break;
+		case Behavior::kAttack:
+
+			BehaviorAttackInitialize();
+			break;
+		}
+
+		behaviorRequest_ = std::nullopt;
+	}
+
+	switch (behavior_) {
+		// 通常攻撃
+	case Behavior::kRoot:
+	default:
+		BehaviorRootUpdate();
+		break;
+		// 通常攻撃
+	case Behavior::kAttack:
+		BehaviorAttackUpdate();
+		break;
+	}
+
+	// 行列を定数バッファに転送
+	worldTransform_.UpdateMatrix();
+
+	// 体の部位を行列を定数バッファに転送
+	worldTransformBody_.UpdateMatrix();
+	worldTransformHead_.UpdateMatrix();
+	worldTransformL_arm_.UpdateMatrix();
+	worldTransformR_arm_.UpdateMatrix();
+	worldTransformHammer_.UpdateMatrix();
+
+}
+
+void Player::Draw(const ViewProjection& viewProjection) {
+	// 3Dモデルを描画
+	models_[kModelIndexBody]->Draw(worldTransformBody_, viewProjection);
+	models_[kModelIndexHead]->Draw(worldTransformHead_, viewProjection);
+	models_[kModelIndexL_arm]->Draw(worldTransformL_arm_, viewProjection);
+	models_[kModelIndexR_arm]->Draw(worldTransformR_arm_, viewProjection);
+	
+	if (behavior_ == Behavior::kAttack) {
+		models_[kModelHammer]->Draw(worldTransformHammer_, viewProjection);
+	}
+}
+
+Vector3 Player::GetWorldPosition() {
+	// ワールド座標を入れる変数
+	Vector3 worldPos;
+
+	// ワールド行列の平行移動成分を取得(ワールド座標)
+	worldPos.x = worldTransform_.matWorld_.m[3][0];
+	worldPos.y = worldTransform_.matWorld_.m[3][1];
+	worldPos.z = worldTransform_.matWorld_.m[3][2];
+
+	return worldPos;
+}
+
+const WorldTransform& Player::GetWorldTransform() {
+	// TODO: return ステートメントをここに挿入します
+	return worldTransform_;
+}
+
+void Player::InitializeFloatingGimmick() { floatingParameter_ = 0.0f; }
+
+void Player::UpdateFlotingGimmick() {
+
+	// 浮遊移動のサイクル<frame>
+	const uint16_t period = 120;
+
+	// 1フレームでのパラメータ加算値
+	const float step = 2.0f * 3.14f / period;
+
+	// パラメータを1ステップ分加算
+	floatingParameter_ += step;
+	// 2πを超えたらθに戻す
+	floatingParameter_ = std::fmod(floatingParameter_, 2.0f * 3.14f);
+
+	// 浮遊の振幅<m>
+	const float floatingAmplitube = 0.1f;
+	// 浮遊を座標に反映
+	worldTransform_.translation_.y += std::sin(floatingParameter_) * floatingAmplitube;
+	float w[3]{
+	    worldTransform_.translation_.x,
+	    worldTransform_.translation_.y,
+	    worldTransform_.translation_.z,
+	};
+	worldTransform_.translation_.x = w[0];
+	worldTransform_.translation_.y = w[1];
+	worldTransform_.translation_.z = w[2];
+
+	ImGui::Begin("Player");
+	float Head[3] = {
+	    worldTransformHead_.translation_.x, worldTransformHead_.translation_.y,
+	    worldTransformHead_.translation_.z};
+
+	float ArmL[3] = {
+	    worldTransformL_arm_.translation_.x, worldTransformL_arm_.translation_.y,
+	    worldTransformL_arm_.translation_.z};
+
+	float ArmR[3] = {
+	    worldTransformR_arm_.translation_.x, worldTransformR_arm_.translation_.y,
+	    worldTransformR_arm_.translation_.z};
+
+	ImGui::SliderFloat3("Head Translation", Head, -30.0f, 30.0f);
+	ImGui::SliderFloat3("ArmL Translation", ArmL, -10, 10);
+	ImGui::SliderFloat3("ArmR Translation", ArmR, -30, 30);
+
+	worldTransformHead_.translation_.x = Head[0];
+	worldTransformHead_.translation_.y = Head[1];
+	worldTransformHead_.translation_.z = Head[2];
+
+	worldTransformL_arm_.translation_.x = ArmL[0];
+	worldTransformL_arm_.translation_.y = ArmL[1];
+	worldTransformL_arm_.translation_.z = ArmL[2];
+
+	worldTransformR_arm_.translation_.x = ArmR[0];
+	worldTransformR_arm_.translation_.y = ArmR[1];
+	worldTransformR_arm_.translation_.z = ArmR[2];
+
+	ImGui::End();
+}
+
+void Player::UpdataArmAnimation() {
+
+	// 浮遊移動のサイクル<frame>
+	const uint16_t period = 120;
+
+	// 1フレームでのパラメータ加算値
+	const float step = 2.0f * 3.14f / period;
+
+	// パラメータを1ステップ分加算
+	floatingParameter_ += step;
+	// 2πを超えたらθに戻す
+	floatingParameter_ = std::fmod(floatingParameter_, 2.0f * 3.14f);
+
+	// 浮遊の振幅<m>
+	const float floatingAmplitube = 0.02f;
+	// 浮遊を座標に反映(左)
+	worldTransformL_arm_.rotation_.x += std::sin(floatingParameter_) * floatingAmplitube;
+	// 浮遊を座標に反映(右)
+	worldTransformR_arm_.rotation_.x += std::sin(floatingParameter_) * floatingAmplitube;
+}
+
+void Player::BehaviorRootInitialize() {
+
+	worldTransformL_arm_.rotation_ = {-0.2f, 0.0f, 0.0f};
+	worldTransformR_arm_.rotation_ = {-0.2f, 0.0f, 0.0f};
+}
+
+void Player::BehaviorAttackInitialize() {}
+
+void Player::BehaviorRootUpdate() {
+	// BaseCharacter::Updata();
 
 	UpdateFlotingGimmick();
 
@@ -89,127 +257,38 @@ void Player::Updata() {
 
 		// 移動
 		worldTransform_.translation_ = Add(worldTransform_.translation_, move);
+
 	}
 
-	// 行列を定数バッファに転送
-	worldTransform_.UpdateMatrix();
-
-	//体の部位を行列を定数バッファに転送
-	worldTransformBody_.UpdateMatrix();
-	worldTransformHead_.UpdateMatrix();
-	worldTransformL_arm_.UpdateMatrix();
-	worldTransformR_arm_.UpdateMatrix();
-
+	// ゲームパッド状態取得
+	if (Input::GetInstance()->GetJoystickState(0, joyState)) {
+		// Aボタンの判定
+		// XINPUT_GAMEPAD_Aとか調べれば公式リファレンスが出てくるので各自調べること
+		if (joyState.Gamepad.wButtons == XINPUT_GAMEPAD_A) {
+			behavior_ = Behavior::kAttack;
+		}
+	}
 }
 
-void Player::Draw(const ViewProjection& viewProjection) {
+void Player::BehaviorAttackUpdate() {
 
-	// 3Dモデルを描画
-	models_[kModeIndexBody]->Draw(worldTransformBody_, viewProjection);
-	models_[kModeIndexHead]->Draw(worldTransformHead_, viewProjection);
-	models_[kModeIndexL_arm]->Draw(worldTransformL_arm_, viewProjection);
-	models_[kModeIndexR_arm]->Draw(worldTransformR_arm_, viewProjection);
+	const float kDegreeToRadian = (float)M_PI / 180.0f;
 
+	attackTime_++;
+	if (attackTime_ <= attackTimeMax_) {
+		 float frame = (float)(attackTime_ / attackTimeMax_);
+		 float easeInBack = EaseInBack(frame * frame);
+		 float weaponAngle = (float)((90 * kDegreeToRadian)) * easeInBack;
+		 float armAngle = (float)((120 * kDegreeToRadian)) * easeInBack;
+		 worldTransformHammer_.rotation_.x = weaponAngle;
+		 worldTransformL_arm_.rotation_.x = armAngle + (float)M_PI;
+		 worldTransformR_arm_.rotation_.x = armAngle + (float)M_PI;
 
+	} else if (attackTime_ >= frameEnd_) {
+		 attackTime_ = 0;
+		 behaviorRequest_ = Behavior::kRoot;
+	} else if (attackTime_ >= attackTimeMax_) {
+	// アニメーションが終わったらカメラを揺らす
+		 //FollowCamera
+	}
 }
-
-Vector3 Player::GetWorldPosition() {
-	// ワールド座標を入れる変数
-	Vector3 worldPos;
-
-	// ワールド行列の平行移動成分を取得(ワールド座標)
-	worldPos.x = worldTransform_.matWorld_.m[3][0];
-	worldPos.y = worldTransform_.matWorld_.m[3][1];
-	worldPos.z = worldTransform_.matWorld_.m[3][2];
-
-	return worldPos;
-}
-
-const WorldTransform& Player::GetWorldTransform() {
-	// TODO: return ステートメントをここに挿入します
-	return worldTransform_;
-}
-
-void Player::InitializeFloatingGimmick() { floatingParameter_ = 0.0f; }
-
-void Player::UpdateFlotingGimmick() {
-
-	// 浮遊移動のサイクル<frame>
-	const uint16_t period = 120;
-
-	// 1フレームでのパラメータ加算値
-	const float step = 2.0f * 3.14f / period;
-
-	// パラメータを1ステップ分加算
-	floatingParameter_ += step;
-	// 2πを超えたらθに戻す
-	floatingParameter_ = std::fmod(floatingParameter_, 2.0f * 3.14f);
-
-	// 浮遊の振幅<m>
-	const float floatingAmplitube = 0.02f;
-	// 浮遊を座標に反映
-	worldTransform_.translation_.y += std::sin(floatingParameter_) * floatingAmplitube;
-	float w[3]{
-	    worldTransform_.translation_.x,
-	    worldTransform_.translation_.y,
-	    worldTransform_.translation_.z,
-	};
-	worldTransform_.translation_.x = w[0];
-	worldTransform_.translation_.y = w[1];
-	worldTransform_.translation_.z = w[2];
-
-	ImGui::Begin("Player");
-	float Head[3] = {
-	    worldTransformHead_.translation_.x, worldTransformHead_.translation_.y,
-	    worldTransformHead_.translation_.z};
-
-	float ArmL[3] = {
-	    worldTransformL_arm_.translation_.x, worldTransformL_arm_.translation_.y,
-	    worldTransformL_arm_.translation_.z};
-
-	float ArmR[3] = {
-	    worldTransformR_arm_.translation_.x, worldTransformR_arm_.translation_.y,
-	    worldTransformR_arm_.translation_.z};
-
-	ImGui::SliderFloat3("Head Translation", Head, -30.0f, 30.0f);
-	ImGui::SliderFloat3("ArmL Translation", ArmL, -10, 10);
-	ImGui::SliderFloat3("ArmR Translation", ArmR, -30, 30);
-	
-	worldTransformHead_.translation_.x = Head[0];
-	worldTransformHead_.translation_.y = Head[1];
-	worldTransformHead_.translation_.z = Head[2];
-
-	worldTransformL_arm_.translation_.x = ArmL[0];
-	worldTransformL_arm_.translation_.y = ArmL[1];
-	worldTransformL_arm_.translation_.z = ArmL[2];
-
-	worldTransformR_arm_.translation_.x = ArmR[0];
-	worldTransformR_arm_.translation_.y = ArmR[1];
-	worldTransformR_arm_.translation_.z = ArmR[2];
-
-	ImGui::End();
-}
-
-void Player::UpdataArmAnimation() {
-
-	// 浮遊移動のサイクル<frame>
-	const uint16_t period = 120;
-
-	// 1フレームでのパラメータ加算値
-	const float step = 2.0f * 3.14f / period;
-
-	// パラメータを1ステップ分加算
-	floatingParameter_ += step;
-	// 2πを超えたらθに戻す
-	floatingParameter_ = std::fmod(floatingParameter_, 2.0f * 3.14f);
-
-	// 浮遊の振幅<m>
-	const float floatingAmplitube = 0.02f;
-	// 浮遊を座標に反映(左)
-	worldTransformL_arm_.rotation_.x += std::sin(floatingParameter_) * floatingAmplitube;
-	// 浮遊を座標に反映(右)
-	worldTransformR_arm_.rotation_.x += std::sin(floatingParameter_) * floatingAmplitube;
-
-}
-
-

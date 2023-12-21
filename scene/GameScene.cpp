@@ -40,6 +40,8 @@ void GameScene::Initialize() {
 	// 敵の左右の3Dモデルの生成
 	modelEnemyR_arm.reset(Model::CreateFromOBJ("needle_R_arm", true));
 
+	// ハンマーの3Dモデルの生成
+	modelHammer_.reset(Model::CreateFromOBJ("hammer", true));
 
 	// 天球の3Dモデル生成
 	modelSkydome_.reset(Model::CreateFromOBJ("skydome", true));
@@ -49,7 +51,8 @@ void GameScene::Initialize() {
 	//自キャラモデルまとめ
 	std::vector<Model*> playerModels = {
 	    modelFighterBody_.get(), modelFighterHead_.get(), modelFighterL_arm_.get(),
-	    modelFighterR_arm_.get()};
+	    modelFighterR_arm_.get(),modelHammer_.get()
+	};
 
 	// 自キャラの生成と初期化処理
 	player_ = std::make_unique<Player>();
