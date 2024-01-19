@@ -1,6 +1,6 @@
 ﻿#include "Player.h"
-#include "ImGuiManager.h"
 #include "Easings.h"
+#include "ImGuiManager.h"
 
 #define _USE_MATH_DEFINES
 #include <math.h>
@@ -93,7 +93,6 @@ void Player::Updata() {
 	worldTransformL_arm_.UpdateMatrix();
 	worldTransformR_arm_.UpdateMatrix();
 	worldTransformHammer_.UpdateMatrix();
-
 }
 
 void Player::Draw(const ViewProjection& viewProjection) {
@@ -102,7 +101,7 @@ void Player::Draw(const ViewProjection& viewProjection) {
 	models_[kModelIndexHead]->Draw(worldTransformHead_, viewProjection);
 	models_[kModelIndexL_arm]->Draw(worldTransformL_arm_, viewProjection);
 	models_[kModelIndexR_arm]->Draw(worldTransformR_arm_, viewProjection);
-	
+
 	if (behavior_ == Behavior::kAttack) {
 		models_[kModelHammer]->Draw(worldTransformHammer_, viewProjection);
 	}
@@ -257,7 +256,6 @@ void Player::BehaviorRootUpdate() {
 
 		// 移動
 		worldTransform_.translation_ = Add(worldTransform_.translation_, move);
-
 	}
 
 	// ゲームパッド状態取得
@@ -276,19 +274,19 @@ void Player::BehaviorAttackUpdate() {
 
 	attackTime_++;
 	if (attackTime_ <= attackTimeMax_) {
-		 float frame = (float)(attackTime_ / attackTimeMax_);
-		 float easeInBack = EaseInBack(frame * frame);
-		 float weaponAngle = (float)((90 * kDegreeToRadian)) * easeInBack;
-		 float armAngle = (float)((120 * kDegreeToRadian)) * easeInBack;
-		 worldTransformHammer_.rotation_.x = weaponAngle;
-		 worldTransformL_arm_.rotation_.x = armAngle + (float)M_PI;
-		 worldTransformR_arm_.rotation_.x = armAngle + (float)M_PI;
+		float frame = (float)(attackTime_ / attackTimeMax_);
+		float easeInBack = EaseInBack(frame * frame);
+		float weaponAngle = (float)((90 * kDegreeToRadian)) * easeInBack;
+		float armAngle = (float)((120 * kDegreeToRadian)) * easeInBack;
+		worldTransformHammer_.rotation_.x = weaponAngle;
+		worldTransformL_arm_.rotation_.x = armAngle + (float)M_PI;
+		worldTransformR_arm_.rotation_.x = armAngle + (float)M_PI;
 
 	} else if (attackTime_ >= frameEnd_) {
-		 attackTime_ = 0;
-		 behaviorRequest_ = Behavior::kRoot;
+		attackTime_ = 0;
+		behaviorRequest_ = Behavior::kRoot;
 	} else if (attackTime_ >= attackTimeMax_) {
-	// アニメーションが終わったらカメラを揺らす
-		 //FollowCamera
+		// アニメーションが終わったらカメラを揺らす
+		// FollowCamera
 	}
 }
