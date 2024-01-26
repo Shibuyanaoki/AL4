@@ -1,5 +1,6 @@
 ﻿#include "Player.h"
 #include "Easings.h"
+#include "GlobalVariables.h"
 #include "ImGuiManager.h"
 
 #define _USE_MATH_DEFINES
@@ -45,6 +46,14 @@ void Player::Initialize(const std::vector<Model*>& models) {
 	worldTransformL_arm_.parent_ = &worldTransformBody_;
 	worldTransformR_arm_.parent_ = &worldTransformBody_;
 	worldTransformHammer_.parent_ = &worldTransformBody_;
+
+	GlobalVariables* globalVariables = GlobalVariables::GetInstance();
+	const char* groupName = "Player";
+
+	// グループを追加
+	GlobalVariables::GetInstance()->CreateGroup(groupName);
+
+	globalVariables->SetValue(groupName, "Test", 90);
 
 	// 浮遊ギッミク
 	InitializeFloatingGimmick();
