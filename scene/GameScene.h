@@ -14,6 +14,7 @@
 #include "Skydome.h"
 #include "Ground.h"
 #include "FollowCamera.h"
+#include "Scene.h"
 #include <memory>
 
 /// <summary>
@@ -47,8 +48,14 @@ public: // メンバ関数
 	/// </summary>
 	void Draw();
 
+	void Reset();
+
 	//デバッグカメラ有効
 	bool isDebugCameraActive_ = false;
+
+	bool IsSceneEnd() { return isSceneEnd; }
+
+	Scene NextScene() { return Scene::GAMECLEAR; }
 
 private: // メンバ変数
 	DirectXCommon* dxCommon_ = nullptr;
@@ -99,4 +106,8 @@ private: // メンバ変数
 	std::unique_ptr<Ground> ground_;
 	//追従カメラ
 	std::unique_ptr<FollowCamera> followCamera_;
+
+	// シーンを終わらせるフラグ
+	bool isSceneEnd = false;
+
 };
