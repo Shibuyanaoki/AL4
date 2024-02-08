@@ -152,36 +152,36 @@ void Player::UpdateFlotingGimmick() {
 	worldTransform_.translation_.y = w[1];
 	worldTransform_.translation_.z = w[2];
 
-	ImGui::Begin("Player");
-	float Head[3] = {
-	    worldTransformHead_.translation_.x, worldTransformHead_.translation_.y,
-	    worldTransformHead_.translation_.z};
+	//ImGui::Begin("Player");
+	//float Head[3] = {
+	//    worldTransformHead_.translation_.x, worldTransformHead_.translation_.y,
+	//    worldTransformHead_.translation_.z};
 
-	float ArmL[3] = {
-	    worldTransformL_arm_.translation_.x, worldTransformL_arm_.translation_.y,
-	    worldTransformL_arm_.translation_.z};
+	//float ArmL[3] = {
+	//    worldTransformL_arm_.translation_.x, worldTransformL_arm_.translation_.y,
+	//    worldTransformL_arm_.translation_.z};
 
-	float ArmR[3] = {
-	    worldTransformR_arm_.translation_.x, worldTransformR_arm_.translation_.y,
-	    worldTransformR_arm_.translation_.z};
+	//float ArmR[3] = {
+	//    worldTransformR_arm_.translation_.x, worldTransformR_arm_.translation_.y,
+	//    worldTransformR_arm_.translation_.z};
 
-	ImGui::SliderFloat3("Head Translation", Head, -30.0f, 30.0f);
-	ImGui::SliderFloat3("ArmL Translation", ArmL, -10, 10);
-	ImGui::SliderFloat3("ArmR Translation", ArmR, -30, 30);
+	//ImGui::SliderFloat3("Head Translation", Head, -30.0f, 30.0f);
+	//ImGui::SliderFloat3("ArmL Translation", ArmL, -10, 10);
+	//ImGui::SliderFloat3("ArmR Translation", ArmR, -30, 30);
 
-	worldTransformHead_.translation_.x = Head[0];
-	worldTransformHead_.translation_.y = Head[1];
-	worldTransformHead_.translation_.z = Head[2];
+	//worldTransformHead_.translation_.x = Head[0];
+	//worldTransformHead_.translation_.y = Head[1];
+	//worldTransformHead_.translation_.z = Head[2];
 
-	worldTransformL_arm_.translation_.x = ArmL[0];
-	worldTransformL_arm_.translation_.y = ArmL[1];
-	worldTransformL_arm_.translation_.z = ArmL[2];
+	//worldTransformL_arm_.translation_.x = ArmL[0];
+	//worldTransformL_arm_.translation_.y = ArmL[1];
+	//worldTransformL_arm_.translation_.z = ArmL[2];
 
-	worldTransformR_arm_.translation_.x = ArmR[0];
-	worldTransformR_arm_.translation_.y = ArmR[1];
-	worldTransformR_arm_.translation_.z = ArmR[2];
+	//worldTransformR_arm_.translation_.x = ArmR[0];
+	//worldTransformR_arm_.translation_.y = ArmR[1];
+	//worldTransformR_arm_.translation_.z = ArmR[2];
 
-	ImGui::End();
+	//ImGui::End();
 }
 
 void Player::UpdataArmAnimation() {
