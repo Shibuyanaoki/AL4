@@ -5,6 +5,11 @@ void ClearScene::Initialize() {
 	worldTransform_.Initialize();
 	dxCommon_ = DirectXCommon::GetInstance();
 	input_ = Input::GetInstance();
+
+	uint32_t titleLettrTexHandle_ = TextureManager::Load("Result.png");
+	Sprite_ =
+	    Sprite::Create(titleLettrTexHandle_, {640, 360}, {1.0f, 1.0f, 1.0f, 1.0f}, {0.5f, 0.5f});
+
 }
 
 void ClearScene::Update() {
@@ -13,7 +18,7 @@ void ClearScene::Update() {
 	XINPUT_STATE joyState;
 	if (Input::GetInstance()->GetJoystickState(0, joyState)) {
 		if (joyState.Gamepad.wButtons == XINPUT_GAMEPAD_A) {
-			//Sleep(1 * 300);
+			Sleep(1 * 300);
 			isSceneEnd = true;
 		}
 	}
@@ -31,6 +36,8 @@ void ClearScene::Draw() {
 	/// <summary>
 	/// ここに背景スプライトの描画処理を追加できる
 	/// </summary>
+
+	Sprite_->Draw();
 
 	// スプライト描画後処理
 	Sprite::PostDraw();

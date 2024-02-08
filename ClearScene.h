@@ -34,4 +34,6 @@ private:
 	// シーンを終わらせるフラグ
 	bool isSceneEnd = false;
 
+	Sprite* Sprite_ = nullptr;
+
 };
