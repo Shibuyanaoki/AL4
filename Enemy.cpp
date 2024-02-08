@@ -22,7 +22,7 @@ void Enemy::Updata() {
 	/*worldTransformL_arm_.parent_ = &worldTransformBody_;
 	worldTransformR_arm_.parent_ = &worldTransformBody_;*/
 
-	Vector3 move = {0, 0, 0.0f};
+	Vector3 move = {0, 0, 0.5f};
 
 	/* float speed = 0.5f;
 

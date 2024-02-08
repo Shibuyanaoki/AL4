@@ -298,7 +298,11 @@ void Player::BehaviorAttackUpdate() {
 }
 
 void Player::ResetPosition() {
-	worldTransform_.rotation_ = {0.0f, 0.0f, 0.0f};
-	worldTransform_.translation_ = {0.0f, 0.0f, 0.0f};
+	// 自機の頭・両腕の初期位置
+	worldTransformHead_.translation_ = {0.0f, 2.0f, 0.0f};
+	worldTransformL_arm_.translation_ = {-0.5f, 1.0f, 0.0f};
+	worldTransformR_arm_.translation_ = {0.5f, 1.0f, 0.0f};
+
+	worldTransformL_arm_.rotation_ = {-0.2f, 0.0f, 0.0f};
 	worldTransform_.UpdateMatrix();
 }
