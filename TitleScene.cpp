@@ -6,10 +6,6 @@ void TitleScene::Initialize() {
 	input_ = Input::GetInstance();
 	audio_ = Audio::GetInstance();
 
-	// bgmHandle_ = audio_->LoadWave("BGM/TitleBGM.mp3");
-	isBGM_ = false;
-	// buttonSound_ = audio_->LoadWave("BGM/Button1.mp3");
-
 	position_ = {640, 280};
 
 	// 背景のスプライト
@@ -23,8 +19,6 @@ void TitleScene::Initialize() {
 
 	uint32_t fadeTexHandle = TextureManager::Load("fade.png");
 	fadeSprite_ = Sprite::Create(fadeTexHandle, {0, 0});
-
-	motionFlag_ = true;
 }
 
 void TitleScene::Update() {

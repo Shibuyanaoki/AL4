@@ -31,7 +31,7 @@ void GameScene::Initialize() {
 	// 自機の左腕の3Dモデルの生成
 	modelFighterL_arm_.reset(Model::CreateFromOBJ("Arm_L", true));
 	// 自機の右腕の3Dモデルの生成
-	modelFighterR_arm_.reset(Model::CreateFromOBJ("float_R_arm", true));
+	modelFighterR_arm_.reset(Model::CreateFromOBJ("Arm_R", true));
 
 	// 敵の体の3Dモデルの生成
 	modelEnemyBody_.reset(Model::CreateFromOBJ("Enemy", true));
