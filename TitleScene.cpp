@@ -29,13 +29,6 @@ void TitleScene::Initialize() {
 
 void TitleScene::Update() {
 
-	if (motionFlag_ == true) {
-		if (position_.x<=0&&position_.y)
-		position_
-
-
-	}
-
 	fadeColor_.w -= 0.005f;
 	fadeSprite_->SetColor(fadeColor_);
 
@@ -45,7 +38,6 @@ void TitleScene::Update() {
 		if (joyState.Gamepad.wButtons == XINPUT_GAMEPAD_A) {
 			Sleep(1 * 300);
 			isSceneEnd = true;
-			// audio_->PlayWave(buttonSound_);
 		}
 	}
 }
@@ -101,7 +93,5 @@ void TitleScene::Draw() {
 }
 
 void TitleScene::Reset() {
-	audio_->StopWave(playBGM_);
-	isBGM_ = false;
 	isSceneEnd = false;
 }

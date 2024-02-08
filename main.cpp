@@ -115,13 +115,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 			if (gameScene->IsSceneEnd() == true) {
 				// 次のシーンを値を代入してシーン切り替え
 				scene = gameScene->NextScene();
-				// シーン切り替え時に色々とリセットする
-				// gameScene->Reset();
-
-				//} else if (gameScene->IsSceneEnd() == true) {
-				//	// シーン切り替え時に色々とリセットする
-				//	scene = gameScene->NextScene();
-				//	gameScene->Reset();
+				gameScene->Reset();
 			}
 
 			break;
@@ -132,23 +126,11 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 				// 次のシーンを値を代入してシーン切り替え
 				scene = clearScene->NextScene();
 				clearScene->Reset();
+
 			}
 
 			// クリアシーンの毎フレーム処理
 			clearScene->Update();
-
-			break;
-
-		case Scene::GAMEOVER:
-
-			if (gameOverScene->IsSceneEnd() == true) {
-				// 次のシーンを値を代入してシーン切り替え
-				scene = gameOverScene->NextScene();
-				gameOverScene->Reset();
-			}
-
-			// リザルトシーンの毎フレーム処理
-			gameOverScene->Update();
 
 			break;
 		}
@@ -176,13 +158,6 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		case Scene::GAMECLEAR:
 			// ゲームクリアシーンの描画
 			clearScene->Draw();
-
-			break;
-
-		case Scene::GAMEOVER:
-
-			// ゲームオーバーシーン
-			gameOverScene->Draw();
 
 			break;
 		}

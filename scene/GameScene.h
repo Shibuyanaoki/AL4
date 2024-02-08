@@ -50,6 +50,11 @@ public: // メンバ関数
 
 	void Reset();
 
+	/// <summary>
+	/// 当たり判定
+	/// </summary>
+	void CheckAllCollision();
+
 	//デバッグカメラ有効
 	bool isDebugCameraActive_ = false;
 

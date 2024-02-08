@@ -28,18 +28,40 @@ public:
 	/// <returns></returns>
 	const WorldTransform& GetWorldTransform();
 
+	/// <summary>
+	///  ワールド座標を取得
+	/// </summary>
+	/// <returns></returns>
+	Vector3 GetWorldPosition();
+
+	// getter
+	float GetRadius() { return radius_; }
+
+	bool IsDead() const { return isDead_; }
+
+	void OnCollision();
+
+	void ResetPosition();
+
 private:
 
 	WorldTransform worldTransformBody_;
-	WorldTransform worldTransformL_arm_;
-	WorldTransform worldTransformR_arm_;
+	/*WorldTransform worldTransformL_arm_;
+	WorldTransform worldTransformR_arm_;*/
 
 	// カメラのビュープロジェクション
 	const ViewProjection* viewProjection_ = nullptr;
 
 	enum EnemyNum {
 		kModeIndexBody,
-		kModeIndexL_arm,
-		kModeIndexR_arm,
+		/*kModeIndexL_arm,
+		kModeIndexR_arm,*/
 	};
+
+	// 半径
+	float radius_ = 4;
+
+	// デスフラグ
+	bool isDead_ = false;
+
 };

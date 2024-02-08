@@ -34,7 +34,7 @@ void Player::Initialize(const std::vector<Model*>& models) {
 	worldTransformHammer_.Initialize();
 
 	// 自機の頭・両腕の初期位置
-	worldTransformHead_.translation_ = {0.0f, 1.3f, 0.0f};
+	worldTransformHead_.translation_ = {0.0f, 2.0f, 0.0f};
 	worldTransformL_arm_.translation_ = {-0.5f, 1.0f, 0.0f};
 	worldTransformR_arm_.translation_ = {0.5f, 1.0f, 0.0f};
 
@@ -214,7 +214,8 @@ void Player::BehaviorRootInitialize() {
 void Player::BehaviorAttackInitialize() {}
 
 void Player::BehaviorRootUpdate() {
-	// BaseCharacter::Updata();
+
+	hammerFlag = false;
 
 	UpdateFlotingGimmick();
 
@@ -282,11 +283,22 @@ void Player::BehaviorAttackUpdate() {
 		worldTransformL_arm_.rotation_.x = armAngle + (float)M_PI;
 		worldTransformR_arm_.rotation_.x = armAngle + (float)M_PI;
 
+		
+
 	} else if (attackTime_ >= frameEnd_) {
 		attackTime_ = 0;
 		behaviorRequest_ = Behavior::kRoot;
+		hammerFlag = true;
+
+
 	} else if (attackTime_ >= attackTimeMax_) {
 		// アニメーションが終わったらカメラを揺らす
 		// FollowCamera
 	}
+}
+
+void Player::ResetPosition() {
+	worldTransform_.rotation_ = {0.0f, 0.0f, 0.0f};
+	worldTransform_.translation_ = {0.0f, 0.0f, 0.0f};
+	worldTransform_.UpdateMatrix();
 }

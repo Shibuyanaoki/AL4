@@ -64,6 +64,8 @@ public: // メンバ関数
 
 	void SetParent(const WorldTransform* parent) { worldTransform_.parent_ = parent; }
 
+	bool HammerFlag() { return hammerFlag; }
+
 	/// <summary>
 	/// 通常行動初期化
 	/// </summary>
@@ -85,6 +87,13 @@ public: // メンバ関数
 	void BehaviorAttackUpdate();
 
 	Behavior behavior_ = Behavior::kRoot;
+
+	// getter
+	float GetRadius() { return radius_; }
+
+	void ResetPosition();
+
+
 
 private:
 	Input* input_ = nullptr;
@@ -122,5 +131,12 @@ private:
 
 	// フレーム
 	float frameEnd_ = 120;
+
+	// 半径
+	float radius_ = 4;
+
+	bool hammerFlag = false;
+
+
 
 };
