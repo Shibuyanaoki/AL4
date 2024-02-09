@@ -2,6 +2,7 @@
 #include "AxisIndicator.h"
 #include "TextureManager.h"
 #include <cassert>
+#include <fstream>
 
 GameScene::GameScene() {}
 
@@ -24,6 +25,9 @@ void GameScene::Initialize() {
 	// 軸方向表示が参考するビュープロジェクションを指定する(アドレス渡し)
 	AxisIndicator::GetInstance()->SetTargetViewProjection(&debugCamera_->GetViewProjection());
 
+	uint32_t fadeTexHandle = TextureManager::Load("fade.png");
+	fadeSprite_ = Sprite::Create(fadeTexHandle, {0, 0});
+
 	// 自機の体の3Dモデルの生成
 	modelFighterBody_.reset(Model::CreateFromOBJ("Body", true));
 	// 自機の頭の3Dモデルの生成
@@ -35,13 +39,12 @@ void GameScene::Initialize() {
 
 	// 敵の体の3Dモデルの生成
 	modelEnemyBody_.reset(Model::CreateFromOBJ("Enemy", true));
-	//// 敵の左の3Dモデルの生成
-	// modelEnemyL_arm.reset(Model::CreateFromOBJ("needle_L_arm", true));
-	//// 敵の左右の3Dモデルの生成
-	// modelEnemyR_arm.reset(Model::CreateFromOBJ("needle_R_arm", true));
 
 	// ハンマーの3Dモデルの生成
 	modelHammer_.reset(Model::CreateFromOBJ("hammer", true));
+
+	// アイテムのモデル
+	modelItem_.reset(Model::CreateFromOBJ("Item", true));
 
 	// 天球の3Dモデル生成
 	modelSkydome_.reset(Model::CreateFromOBJ("skydome", true));
@@ -84,6 +87,9 @@ void GameScene::Initialize() {
 	enemy_ = std::make_unique<Enemy>();
 	enemy_->Initialize(enemyModels);
 
+	// アイテムのCSVファイル読み込み
+	LoadItemPopData();
+
 	enemy_->SetViewProjection(&followCamera_->GetViewProjectionEnemy());
 }
 
@@ -112,6 +118,9 @@ void GameScene::Update() {
 		viewProjection_.UpdateMatrix();
 	}
 
+	fadeColor_.w -= 0.005f;
+	fadeSprite_->SetColor(fadeColor_);
+
 	// 自キャラの更新
 	player_->Updata();
 
@@ -131,7 +140,25 @@ void GameScene::Update() {
 	viewProjection_.matView = followCamera_->GetViewProjection().matView;
 	viewProjection_.matProjection = followCamera_->GetViewProjection().matProjection;
 
-	CheckAllCollision();
+	if (fadeColor_.w <= 0) {
+		CheckAllCollision();
+	}
+
+	// デスフラグの立った敵を削除
+	items_.remove_if([](std::unique_ptr<Item>& item) {
+		if (item->IsDead()) {
+			item.release();
+			return true;
+		}
+		return false;
+	});
+
+	// アイテムのCSVファイルの更新処理
+	UpdataItemPopCommands();
+
+	if (count_ >= 3) {
+		isSceneEnd = true;
+	}
 
 	// ビュープロジェクション行列の転送
 	viewProjection_.TransferMatrix();
@@ -183,6 +210,10 @@ void GameScene::Draw() {
 	// 地面の描画
 	ground_->Draw(viewProjection_);
 
+	for (const std::unique_ptr<Item>& item : items_) {
+		item->Draw(viewProjection_);
+	}
+
 	// 3Dオブジェクト描画後処理
 	Model::PostDraw();
 #pragma endregion
@@ -195,6 +226,8 @@ void GameScene::Draw() {
 	/// ここに前景スプライトの描画処理を追加できる
 	/// </summary>
 
+	fadeSprite_->Draw();
+
 	// スプライト描画後処理
 	Sprite::PostDraw();
 
@@ -204,9 +237,17 @@ void GameScene::Draw() {
 void GameScene::Reset() {
 
 	isSceneEnd = false;
+	count_ = 0;
 
 	player_->ResetPosition();
 	enemy_->ResetPosition();
+
+	fadeColor_.w = 1.0f;
+	fadeSprite_->SetColor(fadeColor_);
+
+	// アイテムのCSVファイル読み込み
+	LoadItemPopData();
+
 }
 
 void GameScene::CheckAllCollision() {
@@ -222,11 +263,88 @@ void GameScene::CheckAllCollision() {
 		float Hit = (posA.x - posB.x) * (posA.x - posB.x) + (posA.y - posB.y) * (posA.y - posB.y) +
 		            (posA.z - posB.z) * (posA.z - posB.z);
 
-		float Radius = (player_->GetRadius() + enemy_->GetRadius()) *
-		               (player_->GetRadius() + enemy_->GetRadius());
+		float Radius = (player_->GetRadiusHammer() + enemy_->GetRadius()) *
+		               (player_->GetRadiusHammer() + enemy_->GetRadius());
 
 		if (Hit <= Radius) {
-			isSceneEnd = true;
+			//isSceneEnd = true;
 		}
 	}
+
+	for (const std::unique_ptr<Item>& item : items_) {
+
+		posA = player_->GetWorldPosition();
+
+		posB = item->GetWorldPosition();
+
+		float Hit = (posA.x - posB.x) * (posA.x - posB.x) + (posA.y - posB.y) * (posA.y - posB.y) +
+		            (posA.z - posB.z) * (posA.z - posB.z);
+
+		float Radius =
+		    (player_->GetRadiusHammer() + item->GetRadius()) * (player_->GetRadiusHammer() + item->GetRadius());
+
+		if (Hit <= Radius) {
+			item->OnCollision();
+			count_++;
+		}
+
+	}
+}
+
+void GameScene::LoadItemPopData() {
+	itemPopCommands.clear();
+	std::ifstream file;
+	file.open("Resources/ItemPop.csv");
+	assert(file.is_open());
+
+	// ファイルの内容を文字列ストリームにコピー
+	itemPopCommands << file.rdbuf();
+
+	// ファイルを閉じる
+	file.close();
+}
+
+void GameScene::UpdataItemPopCommands() {
+	std::string line;
+
+	// コマンド実行ループ
+	while (getline(itemPopCommands, line)) {
+		std::istringstream line_stream(line);
+
+		std::string word;
+		// 　,区切りで行の先頭文字列を所得
+
+		getline(line_stream, word, ',');
+
+		// "//"から始まる行はコメント
+		if (word.find("//") == 0) {
+			// コメント行を飛ばす
+			continue;
+		}
+
+		// POPコマンド
+		if (word.find("POP") == 0) {
+			// x座標
+			getline(line_stream, word, ',');
+			float x = (float)std::atof(word.c_str());
+
+			// y座標
+			getline(line_stream, word, ',');
+			float y = (float)std::atof(word.c_str());
+
+			// z座標
+			getline(line_stream, word, ',');
+			float z = (float)std::atof(word.c_str());
+
+			ItemGenerate({x, y, z});
+		}
+	}
+}
+
+void GameScene::ItemGenerate(Vector3 position) {
+	// アイテムの生成と初期化処理
+	Item* item = new Item();
+	item->Initialize(modelItem_.get(), position);
+
+	items_.push_back(static_cast<std::unique_ptr<Item>>(item));
 }

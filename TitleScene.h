@@ -43,11 +43,8 @@ private:
 	Sprite* titleSprite_ = nullptr;
 	Sprite* titleLetterSprite_ = nullptr;
 
-	Vector2 position_;
+	Vector2 move_ = {5.0f, 5.0f};
 
-	bool motionFlag_ = false;
-
-	Sprite* fadeSprite_ = nullptr;
-	Vector4 fadeColor_ = {1.0f, 1.0f, 1.0f, 1.0f};
+	bool fadeFlag_ = false;
 
 };

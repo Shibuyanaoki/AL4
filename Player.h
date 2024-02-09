@@ -8,8 +8,8 @@
 #include <optional>
 
 enum class Behavior {
-	kRoot, //通常状態
-	kAttack, //攻撃中
+	kRoot,   // 通常状態
+	kAttack, // 攻撃中
 };
 
 class Player : public BaseCharacter {
@@ -89,11 +89,9 @@ public: // メンバ関数
 	Behavior behavior_ = Behavior::kRoot;
 
 	// getter
-	float GetRadius() { return radius_; }
+	float GetRadiusHammer() { return radiusHammer_; }
 
 	void ResetPosition();
-
-
 
 private:
 	Input* input_ = nullptr;
@@ -133,10 +131,10 @@ private:
 	float frameEnd_ = 120;
 
 	// 半径
-	float radius_ = 4;
+	float radius_ = 1;
+
+	// 半径(ハンマー)
+	float radiusHammer_ = 4;
 
 	bool hammerFlag = false;
-
-
-
 };

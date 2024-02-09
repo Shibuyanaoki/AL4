@@ -6,8 +6,6 @@ void TitleScene::Initialize() {
 	input_ = Input::GetInstance();
 	audio_ = Audio::GetInstance();
 
-	position_ = {640, 280};
-
 	// 背景のスプライト
 	titleTexHandle_ = TextureManager::Load("title.png");
 	titleSprite_ =
@@ -15,25 +13,42 @@ void TitleScene::Initialize() {
 
 	uint32_t titleLettrTexHandle_ = TextureManager::Load("titleLetter.png");
 	titleLetterSprite_ =
-	    Sprite::Create(titleLettrTexHandle_, position_, {1.0f, 1.0f, 1.0f, 1.0f}, {0.5f, 0.5f});
-
-	uint32_t fadeTexHandle = TextureManager::Load("fade.png");
-	fadeSprite_ = Sprite::Create(fadeTexHandle, {0, 0});
+	    Sprite::Create(titleLettrTexHandle_, {-1, 360}, {1.0f, 1.0f, 1.0f, 1.0f}, {0.5f, 0.5f});
 }
 
 void TitleScene::Update() {
 
-	fadeColor_.w -= 0.005f;
-	fadeSprite_->SetColor(fadeColor_);
+	Vector2 position_ = titleLetterSprite_->GetPosition();
+
+	position_.x += move_.x;
+	position_.y += move_.y;
+
+	if (position_.x <= 0) {
+		move_.x = 5.0f;
+	}
+
+	if (position_.x >= 1280) {
+		move_.x = -5.0f;
+	}
+
+	if (position_.y <= 0) {
+		move_.y = 5.0f;
+	}
+
+	if (position_.y >= 720) {
+		move_.y = -5.0f;
+	}
+
+	titleLetterSprite_->SetPosition(position_);
 
 	// ゲームパッドの状態を得る変数
 	XINPUT_STATE joyState;
 	if (Input::GetInstance()->GetJoystickState(0, joyState)) {
 		if (joyState.Gamepad.wButtons == XINPUT_GAMEPAD_A) {
-			Sleep(1 * 300);
+			Sleep(2 * 100);
 			isSceneEnd = true;
 		}
-	}
+	}	
 }
 
 void TitleScene::Draw() {
@@ -78,7 +93,7 @@ void TitleScene::Draw() {
 	/// ここに前景スプライトの描画処理を追加できる
 	/// </summary>
 
-	fadeSprite_->Draw();
+	
 
 	// スプライト描画後処理
 	Sprite::PostDraw();
@@ -88,4 +103,6 @@ void TitleScene::Draw() {
 
 void TitleScene::Reset() {
 	isSceneEnd = false;
+	fadeFlag_ = false;
+	titleLetterSprite_->SetPosition({640,360});
 }
