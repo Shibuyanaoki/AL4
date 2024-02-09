@@ -304,5 +304,8 @@ void Player::ResetPosition() {
 	worldTransformR_arm_.translation_ = {0.5f, 1.0f, 0.0f};
 
 	worldTransformL_arm_.rotation_ = {-0.2f, 0.0f, 0.0f};
+
+	worldTransform_.translation_ = {0.0f, 0.0f, 0.0f};
+
 	worldTransform_.UpdateMatrix();
 }

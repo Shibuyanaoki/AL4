@@ -6,19 +6,20 @@ void ClearScene::Initialize() {
 	dxCommon_ = DirectXCommon::GetInstance();
 	input_ = Input::GetInstance();
 
-	uint32_t titleLettrTexHandle_ = TextureManager::Load("Result.png");
-	Sprite_ =
-	    Sprite::Create(titleLettrTexHandle_, {640, 360}, {1.0f, 1.0f, 1.0f, 1.0f}, {0.5f, 0.5f});
-
+	uint32_t ClearTexHandle_ = TextureManager::Load("Result.png");
+	Sprite_ = Sprite::Create(ClearTexHandle_, {640, 360}, {1.0f, 1.0f, 1.0f, 1.0f}, {0.5f, 0.5f});
 }
 
 void ClearScene::Update() {
+
+	fadeColor_.w += 0.005f;
+	Sprite_->SetColor(fadeColor_);
 
 	// ゲームパッドの状態を得る変数
 	XINPUT_STATE joyState;
 	if (Input::GetInstance()->GetJoystickState(0, joyState)) {
 		if (joyState.Gamepad.wButtons == XINPUT_GAMEPAD_A) {
-			Sleep(1 * 300);
+			Sleep(2 * 300);
 			isSceneEnd = true;
 		}
 	}
@@ -71,4 +72,8 @@ void ClearScene::Draw() {
 #pragma endregion
 }
 
-void ClearScene::Reset() { isSceneEnd = false; }
+void ClearScene::Reset() {
+	isSceneEnd = false;
+	fadeColor_.w = 0.0f;
+	Sprite_->SetColor(fadeColor_);
+}

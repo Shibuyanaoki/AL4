@@ -35,5 +35,6 @@ private:
 	bool isSceneEnd = false;
 
 	Sprite* Sprite_ = nullptr;
+	Vector4 fadeColor_ = {1.0f, 1.0f, 1.0f, 0.0f};
 
 };

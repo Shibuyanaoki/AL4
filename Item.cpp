@@ -37,8 +37,6 @@ Vector3 Item::GetWorldPosition() {
 	return worldPos;
 }
 
-//const WorldTransform& Item::GetWorldPosition() { return worldTransform_; }
-
 
 
 
