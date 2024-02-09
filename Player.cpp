@@ -143,14 +143,15 @@ void Player::UpdateFlotingGimmick() {
 	const float floatingAmplitube = 0.1f;
 	// 浮遊を座標に反映
 	worldTransform_.translation_.y += std::sin(floatingParameter_) * floatingAmplitube;
-	float w[3]{
+
+	/*float w[3]{
 	    worldTransform_.translation_.x,
 	    worldTransform_.translation_.y,
 	    worldTransform_.translation_.z,
 	};
 	worldTransform_.translation_.x = w[0];
 	worldTransform_.translation_.y = w[1];
-	worldTransform_.translation_.z = w[2];
+	worldTransform_.translation_.z = w[2];*/
 
 	//ImGui::Begin("Player");
 	//float Head[3] = {
@@ -306,6 +307,9 @@ void Player::ResetPosition() {
 	worldTransformL_arm_.rotation_ = {-0.2f, 0.0f, 0.0f};
 
 	worldTransform_.translation_ = {0.0f, 0.0f, 0.0f};
+	worldTransformBody_.translation_ = {0.0f, 0.0f, 0.0f};
+
+	floatingParameter_ = 0;
 
 	worldTransform_.UpdateMatrix();
 }

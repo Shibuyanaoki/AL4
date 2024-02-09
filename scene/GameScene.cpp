@@ -118,8 +118,10 @@ void GameScene::Update() {
 		viewProjection_.UpdateMatrix();
 	}
 
-	fadeColor_.w -= 0.005f;
-	fadeSprite_->SetColor(fadeColor_);
+	if (fadeColor_.w >= 0 && count_ == 0) {
+		fadeColor_.w -= 0.005f;
+		fadeSprite_->SetColor(fadeColor_);
+	}
 
 	// 自キャラの更新
 	player_->Updata();
@@ -157,7 +159,12 @@ void GameScene::Update() {
 	UpdataItemPopCommands();
 
 	if (count_ >= 3) {
-		isSceneEnd = true;
+
+		fadeColor_.w += 0.005f;
+		fadeSprite_->SetColor(fadeColor_);
+		if (fadeColor_.w >= 1.0f) {
+			isSceneEnd = true;
+		}
 	}
 
 	// ビュープロジェクション行列の転送
@@ -247,7 +254,6 @@ void GameScene::Reset() {
 
 	// アイテムのCSVファイル読み込み
 	LoadItemPopData();
-
 }
 
 void GameScene::CheckAllCollision() {
@@ -267,7 +273,7 @@ void GameScene::CheckAllCollision() {
 		               (player_->GetRadiusHammer() + enemy_->GetRadius());
 
 		if (Hit <= Radius) {
-			//isSceneEnd = true;
+			// isSceneEnd = true;
 		}
 	}
 
@@ -280,14 +286,13 @@ void GameScene::CheckAllCollision() {
 		float Hit = (posA.x - posB.x) * (posA.x - posB.x) + (posA.y - posB.y) * (posA.y - posB.y) +
 		            (posA.z - posB.z) * (posA.z - posB.z);
 
-		float Radius =
-		    (player_->GetRadiusHammer() + item->GetRadius()) * (player_->GetRadiusHammer() + item->GetRadius());
+		float Radius = (player_->GetRadiusHammer() + item->GetRadius()) *
+		               (player_->GetRadiusHammer() + item->GetRadius());
 
 		if (Hit <= Radius) {
 			item->OnCollision();
 			count_++;
 		}
-
 	}
 }
 

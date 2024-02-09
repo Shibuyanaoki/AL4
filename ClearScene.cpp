@@ -12,8 +12,8 @@ void ClearScene::Initialize() {
 
 void ClearScene::Update() {
 
-	fadeColor_.w += 0.005f;
-	Sprite_->SetColor(fadeColor_);
+	/*fadeColor_.w += 0.005f;
+	Sprite_->SetColor(fadeColor_);*/
 
 	// ゲームパッドの状態を得る変数
 	XINPUT_STATE joyState;
@@ -74,6 +74,4 @@ void ClearScene::Draw() {
 
 void ClearScene::Reset() {
 	isSceneEnd = false;
-	fadeColor_.w = 0.0f;
-	Sprite_->SetColor(fadeColor_);
 }
